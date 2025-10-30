@@ -1,0 +1,38 @@
+
+# 设置基因型及其对应的样品数  
+genotypes <- c("A", "B", "C", "D", "E", "F", "G", "H", "I")  
+counts <- c(41, 3, 1, 1, 1, 7, 1, 8, 2)  
+
+# 初始化结果向量  
+sample_sizes <- 1:150  
+average_observed_genotypes <- numeric(length(sample_sizes))  
+
+# 设置随机种子以保证结果可重复  
+set.seed(123)  
+
+# 模拟抽样过程  
+for (i in seq_along(sample_sizes)) {  
+  n <- sample_sizes[i]  # 当前抽样的样品数  
+  
+  # 初始化向量来存储每次抽样（在100次重复中）观察到的独特基因型数量  
+  observed_genotypes_per_repetition <- numeric(100)  
+  
+  # 重复抽样100次  
+  for (j in 1:100) {  
+    # 有放回地抽取n个样品  
+    sample_indices <- sample(seq_along(counts), n, replace = TRUE, prob = counts / sum(counts))  
+    # 计算这次抽样中观察到的独特基因型数量  
+    unique_genotypes <- length(unique(genotypes[sample_indices]))  
+    # 存储这次抽样观察到的独特基因型数量  
+    observed_genotypes_per_repetition[j] <- unique_genotypes  
+  }  
+  
+  # 计算平均观察到的独特基因型数量  
+  average_observed_genotypes[i] <- mean(observed_genotypes_per_repetition)  
+}  
+
+# 绘制稀释曲线  
+plot(sample_sizes, average_observed_genotypes, type = 'l', col = 'blue',  
+     xlab = "Sample Size", ylab = "Average Number of Observed Unique Genotypes",  
+     main = "Dilution Curve for Observed Unique Genotypes")
+
